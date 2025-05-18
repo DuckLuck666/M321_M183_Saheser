@@ -1,0 +1,2 @@
+2025-04-24 12:24:41 - {"eventType":"Hinzufügen","name":"234","elevation":"233","hasMountainRailway":true,"timestamp":"2025-04-24T10:24:41.815Z"}
+2025-04-24 12:34:14 - {"eventType":"Hinzufügen","name":"234","elevation":"233","hasMountainRailway":true,"timestamp":"2025-04-24T10:34:14.633Z"}

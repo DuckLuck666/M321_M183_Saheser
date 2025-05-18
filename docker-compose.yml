@@ -1,0 +1,115 @@
+services:
+  db:
+    image: mysql:8
+    platform: linux/amd64
+    container_name: 2025-mnts-db
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=2025-mnts
+      - MYSQL_TCP_PORT=3306
+    volumes:
+      - ./database-content:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
+    networks:
+      - m183-321-network
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8087:8080
+    networks:
+      - m183-321-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: 2025-mnts-rabbitmq
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - m183-321-network
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  rabbitexchange:
+    build:
+      context: ./rabbit-exchange
+      dockerfile: Dockerfile
+    container_name: 2025-mnts-mqtt-exchange
+    ports:
+      - '3001:3001'
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    networks:
+      - m183-321-network
+    restart: unless-stopped
+
+  rabbitsublog:
+    build:
+      context: .
+      dockerfile: sub/Dockerfile
+    container_name: 2025-mnts-rabbitSubLog
+    networks:
+      - m183-321-network
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  rabbitconsolesub:
+    build:
+      context: .
+      dockerfile: anzeige/Dockerfile
+    container_name: 2025-mnts-consoleSub
+    networks:
+      - m183-321-network
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1.2
+    container_name: 2025-mnts-keycloak
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    command: ['start-dev']
+    ports:
+      - '8089:8080'
+    volumes:
+      - ./keycloak-content:/opt/keycloak/data
+    networks:
+      - m183-321-network
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 9090:9090
+    networks:
+      - m183-321-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+
+
+networks:
+  m183-321-network:
+    driver: bridge

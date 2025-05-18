@@ -1,0 +1,20 @@
+{
+  "name": "mqtt-mountain-logger",
+  "version": "1.0.0",
+  "description": "Publisher Service für Mountain Logging mit MQTT/RabbitMQ Exchange",
+  "main": "anzeige.js",
+  "scripts": {
+    "start": "node anzeige.js"
+  },
+  "author": "Martin Hager",
+  "license": "ISC",
+  "dependencies": {
+    "amqplib": "^0.10.5",
+    "axios": "^1.3.4",
+    "dayjs": "^1.11.13",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mqtt": "^4.3.7",
+    "winston": "^3.3.3"
+  }
+}

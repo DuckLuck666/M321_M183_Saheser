@@ -1,0 +1,76 @@
+.mountain-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+  margin: 20px auto 0;
+}
+
+.mountain-form input {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.mountain-form button {
+  padding: 10px;
+  font-size: 16px;
+  background-color: #333;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.mountain-form button:hover {
+  background-color: #111;
+}
+.container {
+  max-width: 450px;
+  margin: 20px auto;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-align: center;
+  
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #ffffff;
+}
+
+.input {
+  width: 90%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: white;
+  color: rgb(0, 0, 0);
+}
+
+.file-input {
+  border: none;
+  padding: 5px;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  background: #424242;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.submit-button:hover {
+  background: #313131;
+}
