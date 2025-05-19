@@ -4,7 +4,7 @@ const logRoutes = require('./producer/producer.routes');
 const app = express();
 app.use(express.json());
 
-// API-Routen nutzen
+
 app.use('/api', logRoutes);
 
 const PORT = 3001;

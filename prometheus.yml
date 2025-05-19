@@ -8,6 +8,15 @@ scrape_configs:
           - 'host.docker.internal:9090' # Prometheus itself
     docker_sd_configs:
       - host: unix:///var/run/docker.sock
+      
   - job_name: 'rabbitexchange'
     static_configs:
       - targets: ['rabbitexchange:3001']
+
+  - job_name: 'rabbitconsolesub'
+    static_configs:
+      - targets: ['rabbitconsolesub:3002']
+
+  - job_name: 'rabbitsublog'
+    static_configs:
+      - targets: ['rabbitsublog:3003']

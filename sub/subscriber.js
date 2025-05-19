@@ -57,7 +57,9 @@ async function connectToRabbitMQ(retries = 5, delay = 5000) {
       console.log(`🔁 Neuer Versuch... (${6 - retries}/${5}) in ${delay}ms`);
       setTimeout(() => connectToRabbitMQ(retries - 1, delay * 2), delay);
     } else {
-      console.error('❌ Maximaler Verbindungsversuch erreicht. Verbindung fehlgeschlagen.');
+      console.error(
+        '❌ Maximaler Verbindungsversuch erreicht. Verbindung fehlgeschlagen.'
+      );
       process.exit(1);
     }
   }
@@ -65,3 +67,51 @@ async function connectToRabbitMQ(retries = 5, delay = 5000) {
 
 // Starte Subscriber (kein Express-Server notwendig, falls nur Subscriber)
 connectToRabbitMQ();
+
+const express = require('express');
+
+const app = express();
+app.use(express.json());
+
+const PORT = 3003;
+
+// Route for the root path
+app.get('/', (req, res) => {
+  res.send(
+    'Logging Event API is running. Use /api/logevent/add to add events.'
+  );
+});
+
+app.listen(PORT, () => {
+  console.log(`Logging Event API running on http://localhost:${PORT}`);
+});
+const promclient = require('prom-client');
+
+const register = promclient.register;
+
+// collect default metrics like memory usage, CPU, etc.
+promclient.collectDefaultMetrics();
+
+// Custom metric example
+const httpRequestCounter = new promclient.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'path', 'status'],
+});
+
+app.use((req, res, next) => {
+  res.on('finish', () => {
+    httpRequestCounter.labels(req.method, req.path, res.statusCode).inc();
+  });
+  next();
+});
+
+// Prometheus metrics endpoint
+app.get('/metrics', async (req, res) => {
+  try {
+    res.set('Content-Type', register.contentType);
+    res.end(await register.metrics());
+  } catch (ex) {
+    res.status(500).end(ex);
+  }
+});
