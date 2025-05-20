@@ -11,8 +11,6 @@ const initKeycloak = () => {
   let promise = new Promise(function (resolve, reject) {
     try {
       console.log('initKeycloak');
-      // check-sso: no automatic login at startup.
-      // User must click on login button
       keycloak
         .init({ onLoad: 'check-sso' })
         .then((authenticated) => {
@@ -37,7 +35,7 @@ const initKeycloak = () => {
 };
 
 function login() {
-  // calls automatically keycloak.init() with check-sso
+
   keycloak.login();
 }
 
@@ -45,7 +43,6 @@ function logout() {
   keycloak.logout();
 }
 function getToken() {
-  // Refresh the token if it is near expiry or has expired
   keycloak
     .updateToken(70)
     .then((refreshed) => {

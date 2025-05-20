@@ -10,7 +10,7 @@ async function publishLogEvent(eventType, mountainData) {
     const connection = await amqp.connect(RABBITMQ_URL);
     const channel = await connection.createChannel();
 
-    // Exchange deklarieren (Fanout = Broadcast an alle Queues)
+
     await channel.assertExchange(EXCHANGE_NAME, 'fanout', { durable: false });
 
     const logEvent = {
@@ -20,8 +20,6 @@ async function publishLogEvent(eventType, mountainData) {
       hasMountainRailway: mountainData.hasmountainrailway,
       timestamp: new Date().toISOString(),
     };
-
-    // **Nachricht an Exchange senden (keine direkte Queue!)**
     channel.publish(EXCHANGE_NAME, '', Buffer.from(JSON.stringify(logEvent)));
     console.log(` [x] Sent ${eventType} event`, logEvent);
 

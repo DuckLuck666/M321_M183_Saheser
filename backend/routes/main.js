@@ -1,11 +1,6 @@
-// moudule providing objects and functions for routing
 const express = require('express');
 const { body } = require('express-validator');
-
-// utility to handle file uploads
 const multer = require('multer');
-
-// import controller functions
 const mountainCtrl = require('../controllers/mountain');
 const userCtrl = require('../controllers/user');
 const passport = require('../passport-config');
@@ -65,12 +60,20 @@ if (USE_SESSIOIN_HANDLING) {
     '/mnts',
     keycloak.protect(),
     [
-      body('elevation') //maybe todo
-        .isNumeric()
-        .withMessage('Elevation muss eine Zahl sein'),
+      body('name')
+        .matches(/^[a-zA-ZäöüÄÖÜ0-9\s']+$/)
+        .withMessage(
+          'Name must contain only letters, numbers, spaces, and single quotes'
+        ),
+      body('elevation')
+        .isInt({ min: 0 })
+        .withMessage('Elevation must be an integer value greater than or equal to 0'),
+      body('longitude')
+        .isFloat({ min: -180.0, max: 180.0 })
+        .withMessage('Longitude must be a number between -180.0 and 180.0'),
       body('latitude')
-        .isFloat({ min: -90, max: 90 })
-        .withMessage('Breitengrad muss zwischen -90 und 90 sein'),
+        .isFloat({ min: -90.0, max: 90.0 })
+        .withMessage('Latitude must be a number between -90.0 and 90.0'),
     ],
     mountainCtrl.addPublicMountain
   );

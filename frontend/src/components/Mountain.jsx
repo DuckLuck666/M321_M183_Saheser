@@ -227,6 +227,13 @@ export default function Mountain({ onMountainAdded, selectedMountain }) {
             Hat keine Bergbahn
           </label>
         </div>
+        <input
+          type="file"
+          name="datei"
+          onChange={handleChange}
+          className="file-input"
+          accept="image/png, image/jpeg, image/jpg"
+        />
         <textarea
           name="description"
           placeholder="Beschreibung"
@@ -255,6 +262,7 @@ export default function Mountain({ onMountainAdded, selectedMountain }) {
                 </a>{' '}
                 geklickt werden kann:
               </p>
+              <p>Not sanitized description:</p>
               <p
                 dangerouslySetInnerHTML={{ __html: formData.description }}
                 style={{ whiteSpace: 'pre-wrap' }}

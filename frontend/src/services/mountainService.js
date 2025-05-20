@@ -27,37 +27,33 @@ async function loadMountain(mntId) {
     return mnt;
   } catch (err) {
     console.error('Error loading mountain:', err);
-    throw err; // Propagate the error instead of showing alert
+    throw err; 
   }
 }
 
 async function addMountain(mountain) {
   try {
-    if (mountain.id > 0) {
-      // Call updatePublicMountain if the mountain ID is greater than 0
+    if (mountain.id > 0) {   
       const response = await axios.put(
         `${backendHost}/mnts/${mountain.id}`,
         mountain
       );
       return response.data;
     } else {
-      // Call addPublicMountain if the mountain ID is not set
       const response = await axios.post(`${backendHost}/mnts`, mountain);
       return response.data;
     }
   } catch (err) {
     if (err.response && err.response.status === 422) {
-      // Display the error message from the response
       const errorMessage =
         err.response.data.message || 'Validation error occurred';
       console.error('Validation error:', errorMessage);
-      alert(errorMessage); // Display the error message in an alert (or you can show it on the UI)
+      alert(errorMessage);
     } else {
-      // Handle other errors
       console.error('Error adding/updating mountain:', err);
       alert('An error occurred while processing your request.');
     }
-    throw err; // Propagate the error
+    throw err;
   }
 }
 
@@ -70,7 +66,7 @@ async function deleteMountain(mntId, token) {
     });
   } catch (err) {
     console.error('Error deleting mountain:', err);
-    throw err; // Propagate the error
+    throw err;
   }
 }
 async function getStatistics(elevationLevel, token) {
@@ -82,8 +78,6 @@ async function getStatistics(elevationLevel, token) {
       },
     });
     const { statistics, publicKey, signature } = res.data;
-
-    // Function to convert PEM to ArrayBuffer
     function pemToArrayBuffer(pem) {
       const b64Lines = pem.replace(/-----[^-]+-----/g, '').replace(/\s+/g, '');
       const b64Decoded = atob(b64Lines);
@@ -93,8 +87,6 @@ async function getStatistics(elevationLevel, token) {
       }
       return arrayBuffer.buffer;
     }
-
-    // Convert PEM public key to CryptoKey
     const cryptoKey = await window.crypto.subtle.importKey(
       'spki',
       pemToArrayBuffer(publicKey),
@@ -106,16 +98,16 @@ async function getStatistics(elevationLevel, token) {
       ['verify']
     );
 
-    // Encode statistics JSON string to ArrayBuffer
+ 
     const encoder = new TextEncoder();
     const dataBuffer = encoder.encode(JSON.stringify(statistics));
 
-    // Decode Base64 signature to ArrayBuffer
+
     const signatureBuffer = pemToArrayBuffer(
       '-----BEGIN SIGNATURE-----\n' + signature + '\n-----END SIGNATURE-----'
     );
 
-    // Verify the signature
+
     const isValid = await window.crypto.subtle.verify(
       {
         name: 'RSASSA-PKCS1-v1_5',
@@ -132,7 +124,7 @@ async function getStatistics(elevationLevel, token) {
     return { statistics, publicKey, signature, isValid };
   } catch (err) {
     console.error('Error loading statistics:', err);
-    throw err; // Propagate the error
+    throw err; 
   }
 }
 export default {
@@ -140,5 +132,5 @@ export default {
   loadMountain,
   addMountain,
   deleteMountain,
-  getStatistics, // Export the new deleteMountain function
+  getStatistics,
 };

@@ -63,7 +63,7 @@ exports.getImage = (req, res, next) => {
 
   let requestedPath = path.normalize(path.join(staticPath, req.query.filename));
 
-  // Sicherheit: Prüfen, ob der finale Pfad im STATIC_DIR bleibt
+
   if (!requestedPath.startsWith(staticPath)) {
     return res.status(403).send('Zugriff verweigert!');
   }

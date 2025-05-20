@@ -11,7 +11,9 @@ const QUEUE_NAME = 'log_queue_Saheser';
 const EXCHANGE_NAME = 'log_exchange_Saheser';
 const LOG_DIR = path.join(__dirname, 'logs');
 
-// Log-Verzeichnis anlegen, falls nicht vorhanden
+console.log(RABBITMQ_URL);
+
+
 if (!fs.existsSync(LOG_DIR)) {
   fs.mkdirSync(LOG_DIR);
 }
@@ -31,7 +33,6 @@ const appendLogToFile = (logMessage) => {
   });
 };
 
-// Verbindung mit verbesserter Retry-Logik aufbauen
 async function connectToRabbitMQ(retries = 5, delay = 5000) {
   try {
     const connection = await amqp.connect(RABBITMQ_URL);
@@ -41,7 +42,7 @@ async function connectToRabbitMQ(retries = 5, delay = 5000) {
     await channel.assertQueue(QUEUE_NAME, { durable: false });
     await channel.bindQueue(QUEUE_NAME, EXCHANGE_NAME, '');
 
-    console.log(`🚀 Wartet auf Nachrichten in Queue: ${QUEUE_NAME}`);
+    console.log(`Wartet auf Nachrichten in Queue: ${QUEUE_NAME}`);
 
     channel.consume(QUEUE_NAME, (msg) => {
       if (msg !== null) {
@@ -52,20 +53,19 @@ async function connectToRabbitMQ(retries = 5, delay = 5000) {
       }
     });
   } catch (error) {
-    console.error(`❌ Fehler bei Verbindung zu RabbitMQ: ${error.message}`);
+    console.error(` Fehler bei Verbindung zu RabbitMQ: ${error.message}`);
     if (retries > 0) {
       console.log(`🔁 Neuer Versuch... (${6 - retries}/${5}) in ${delay}ms`);
       setTimeout(() => connectToRabbitMQ(retries - 1, delay * 2), delay);
     } else {
       console.error(
-        '❌ Maximaler Verbindungsversuch erreicht. Verbindung fehlgeschlagen.'
+        ' Maximaler Verbindungsversuch erreicht. Verbindung fehlgeschlagen.'
       );
       process.exit(1);
     }
   }
 }
 
-// Starte Subscriber (kein Express-Server notwendig, falls nur Subscriber)
 connectToRabbitMQ();
 
 const express = require('express');
@@ -75,7 +75,7 @@ app.use(express.json());
 
 const PORT = 3003;
 
-// Route for the root path
+
 app.get('/', (req, res) => {
   res.send(
     'Logging Event API is running. Use /api/logevent/add to add events.'
@@ -89,10 +89,9 @@ const promclient = require('prom-client');
 
 const register = promclient.register;
 
-// collect default metrics like memory usage, CPU, etc.
 promclient.collectDefaultMetrics();
 
-// Custom metric example
+
 const httpRequestCounter = new promclient.Counter({
   name: 'http_requests_total',
   help: 'Total number of HTTP requests',
@@ -106,7 +105,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Prometheus metrics endpoint
+
 app.get('/metrics', async (req, res) => {
   try {
     res.set('Content-Type', register.contentType);

@@ -14,24 +14,13 @@ const cookieParser = require('cookie-parser');
 const fs = require('fs');
 const https = require('https');
 const PORT = 3443;
-
-// module for handling http requests and responses and managing routes
 const express = require('express');
-
-// helper for concatinating paths
 const path = require('path');
-
-// session management
 const session = require('express-session');
 const MemoryStore = require('memorystore')(session);
 const memoryStore = new MemoryStore();
-// importing self-developed moudules
 const routes = require('./routes/main');
-
-// importing log utilities
 const logger = require('./util/log');
-
-// import model classes
 const Mountain = require('./models/mountain');
 const User = require('./models/user');
 
@@ -92,7 +81,6 @@ if (USE_SESSIOIN_HANDLING) {
 } else {
   api.use(
     session({
-      //secret: found in keycloak.json
       secret: 'x7x1qydPBDoaij1iEohNcxEBYfhv7Jyi',
       resave: false,
       saveUninitialized: true,
@@ -101,10 +89,6 @@ if (USE_SESSIOIN_HANDLING) {
   );
   api.use(keycloak.middleware());
 }
-
-// initialize cookie-parser middleware
-
-// configure cookie settings
 
 api.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
@@ -116,15 +100,10 @@ api.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
 });
-/*
-const helmet = require('helmet');
 
-api.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));*/
-// set static path for public dirctory: cwd=current working directory
 api.use(express.static(path.join(process.cwd(), STATIC_DIR)));
 
 api.use(routes);
-// fallback: redirect to / in case there is no routing match
 api.use((req, res, next) => {
   res.redirect('/');
 });
@@ -144,10 +123,7 @@ api.use((err, req, res, next) => {
 // try to connect to database and start listener
 (async () => {
   try {
-    // sync database and load sample data while project code is under developement
-    // check environment variable NODE_DBSYNC
     if (process.env.NODE_DBSYNC === 'true') {
-      // polling for ready database
       let isDbReady = false;
       for (let i = 0; i < 5; i++) {
         try {
@@ -191,7 +167,7 @@ api.use((err, req, res, next) => {
             avatar: user.avatar,
           });
         }
-        // associate mountains to users
+
         for (const userMountain of sampledata.userMountains) {
           await Mountain.update(
             {

@@ -9,7 +9,6 @@ app.use('/api', logRoutes);
 
 const PORT = 3001;
 
-// Route for the root path
 app.get('/', (req, res) => {
   res.send(
     'Logging Event API is running. Use /api/logevent/add to add events.'
@@ -23,10 +22,8 @@ const promclient = require('prom-client');
 
 const register = promclient.register;
 
-// collect default metrics like memory usage, CPU, etc.
 promclient.collectDefaultMetrics();
 
-// Custom metric example
 const httpRequestCounter = new promclient.Counter({
   name: 'http_requests_total',
   help: 'Total number of HTTP requests',
@@ -40,7 +37,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Prometheus metrics endpoint
 app.get('/metrics', async (req, res) => {
   try {
     res.set('Content-Type', register.contentType);

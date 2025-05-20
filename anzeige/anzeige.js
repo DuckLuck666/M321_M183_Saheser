@@ -8,7 +8,6 @@ const RABBITMQ_URL = `amqp://${rabbitmqHost}:${rabbitmqPort}`;
 
 const EXCHANGE_NAME = 'log_exchange_Saheser';
 
-// Circular buffer to store the last 15 events
 class EventBuffer {
   constructor(capacity) {
     this.capacity = capacity;
@@ -16,11 +15,10 @@ class EventBuffer {
   }
 
   add(event) {
-    // Wenn die Anzahl der Events die Kapazität überschreitet, wird das älteste entfernt
     if (this.buffer.length >= this.capacity) {
-      this.buffer.shift(); // Entfernt das älteste Event
+      this.buffer.shift();
     }
-    this.buffer.push(event); // Fügt das neue Event hinzu
+    this.buffer.push(event);
     this.display();
   }
 
@@ -41,10 +39,8 @@ class EventBuffer {
   }
 }
 
-// Erstelle einen Event-Buffer mit einer Kapazität von 15 Events
 const eventBuffer = new EventBuffer(15);
 
-// Verbinde dich mit RabbitMQ und starte das Abonnieren der Nachrichten
 async function startSubscriber() {
   try {
     // Stelle die Verbindung zu RabbitMQ her
@@ -60,16 +56,15 @@ async function startSubscriber() {
 
     console.log('Subscriber gestartet. Warte auf Nachrichten...');
 
-    // Starte das Empfangen von Nachrichten
     channel.consume(queue, (msg) => {
       if (msg !== null) {
         try {
-          const event = JSON.parse(msg.content.toString()); // Verarbeite die Nachricht als JSON
-          eventBuffer.add(event); // Füge das Event dem Buffer hinzu
-          channel.ack(msg); // Bestätige die Nachricht als verarbeitet
+          const event = JSON.parse(msg.content.toString());
+          eventBuffer.add(event);
+          channel.ack(msg);
         } catch (error) {
           console.error('Fehler beim Verarbeiten der Nachricht:', error);
-          channel.nack(msg); // Falls ein Fehler auftritt, nack die Nachricht
+          channel.nack(msg);
         }
       }
     });
@@ -86,7 +81,6 @@ async function startSubscriber() {
   }
 }
 
-// Starte den Subscriber
 startSubscriber();
 const express = require('express');
 
@@ -95,7 +89,6 @@ app.use(express.json());
 
 const PORT = 3002;
 
-// Route for the root path
 app.get('/', (req, res) => {
   res.send(
     'Logging Event API is running. Use /api/logevent/add to add events.'
@@ -108,11 +101,8 @@ app.listen(PORT, () => {
 const promclient = require('prom-client');
 
 const register = promclient.register;
-
-// collect default metrics like memory usage, CPU, etc.
 promclient.collectDefaultMetrics();
 
-// Custom metric example
 const httpRequestCounter = new promclient.Counter({
   name: 'http_requests_total',
   help: 'Total number of HTTP requests',
@@ -126,7 +116,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Prometheus metrics endpoint
 app.get('/metrics', async (req, res) => {
   try {
     res.set('Content-Type', register.contentType);

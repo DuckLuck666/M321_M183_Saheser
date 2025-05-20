@@ -54,7 +54,7 @@ function getMountainLogObj(mountain) {
   return {
     name: mountain.name,
     elevation: mountain.elevation,
-    hasmountainrailway: mountain.hasmountainrailway, // Updated property name
+    hasmountainrailway: mountain.hasmountainrailway, 
     date: new Date(),
   };
 }

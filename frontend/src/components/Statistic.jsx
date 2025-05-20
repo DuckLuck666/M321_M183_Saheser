@@ -26,9 +26,7 @@ const Statistic = ({ elevationLevel }) => {
 
   if (loading) return <div>Lade Statistiken...</div>;
   if (error) return <div>{error}</div>;
-
-  // Defensive checks to avoid undefined errors
-  const stats = statistics?.statistics || statistics; // in case statistics is wrapped
+  const stats = statistics?.statistics || statistics; 
   if (!stats) {
     return <div>Keine Statistiken verfügbar</div>;
   }

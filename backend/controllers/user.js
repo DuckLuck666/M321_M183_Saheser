@@ -45,7 +45,6 @@ exports.login = async (req, res, next) => {
     let user = await User.findOne({ where: { username: username } });
 
     if (user && (await bcrypt.compare(pwd, user.pwd))) {
-      // Passwort vergleichen
       res.status(HTTP_STATUS_OK).json(user);
     } else {
       const err = new Error('Authentication failed.');
@@ -65,7 +64,6 @@ exports.checkAndChangePlaintextPasswords = async () => {
 
     for (let user of users) {
       if (!user.pwd.startsWith('$2b$')) {
-        // Prüfen, ob das Passwort bereits gehasht ist
         const hashedPwd = await exports.hashPassword(user.pwd);
         await user.update({ pwd: hashedPwd });
         console.log(`Passwort für Benutzer ${user.username} wurde gehasht.`);

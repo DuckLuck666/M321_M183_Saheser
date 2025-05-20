@@ -4,7 +4,7 @@
     auto-fill,
     minmax(300px, 1fr)
   ); /* Responsive columns */
-  gap: 10px; /* Space between cards */
+  gap: 10px; 
   padding: 10px;
 }
 
@@ -12,7 +12,7 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 12px; /* Reduced padding to make cards smaller */
+  padding: 12px;
   background-color: #fff;
   text-align: center;
 }
@@ -26,9 +26,9 @@
 }
 
 .mountain-image {
-  width: 100%; /* Take full width of the parent */
-  height: 300px; /* Set a fixed height for the image */
-  object-fit: cover; /* Ensure the image scales proportionally and fills the height */
+  width: 100%; 
+  height: 300px; 
+  object-fit: cover; 
   border-radius: 8px;
   margin-bottom: 8px;
 }

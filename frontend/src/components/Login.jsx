@@ -3,7 +3,7 @@ import './login.css';
 
 const Login = ({ handleLoginSubmit }) => {
   const [formData, setFormData] = useState({
-    username: '', // Stelle sicher, dass es ein leerer String ist
+    username: '',
     pwd: '',
   });
 

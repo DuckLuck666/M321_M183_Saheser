@@ -2,7 +2,7 @@ services:
   db:
     image: mysql:8
     platform: linux/amd64
-    container_name: 2025-mnts-db
+    container_name: saheser_2025-mnts-db
     ports:
       - '3306:3306'
     environment:
@@ -25,7 +25,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management
-    container_name: 2025-mnts-rabbitmq
+    container_name: saheser_2025-mnts-rabbitmq
     ports:
       - '5672:5672'
       - '15672:15672'
@@ -42,7 +42,7 @@ services:
     build:
       context: ./rabbit-exchange
       dockerfile: Dockerfile
-    container_name: 2025-mnts-mqtt-exchange
+    container_name: saheser_2025-mnts-mqtt-exchange
     ports:
       - '3001:3001'
     environment:
@@ -56,7 +56,7 @@ services:
     build:
       context: .
       dockerfile: sub/Dockerfile
-    container_name: 2025-mnts-rabbitSubLog
+    container_name: saheser_2025-mnts-rabbitSubLog
     networks:
       - m183-321-network
     environment:
@@ -70,7 +70,7 @@ services:
     build:
       context: .
       dockerfile: anzeige/Dockerfile
-    container_name: 2025-mnts-consoleSub
+    container_name: saheser_2025-mnts-consoleSub
     networks:
       - m183-321-network
     environment:
@@ -82,7 +82,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.1.2
-    container_name: 2025-mnts-keycloak
+    container_name: saheser_2025-mnts-keycloak
     environment:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=admin
@@ -110,7 +110,7 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
   grafana:
     image: grafana/grafana:latest
-    container_name: grafana
+    container_name: saheser_grafana
     ports:
       - '3005:3000' # Map internal 3000 to host port 3005
     volumes:

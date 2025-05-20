@@ -3,10 +3,9 @@ const path = require('path');
 const glob = require('glob');
 const logger = require('../util/log');
 const crypto = require('crypto');
-
 const { isEmpty } = require('../util/helper');
 const Mountain = require('../models/mountain');
-const loggingEvents = require('../util/loggingEvents'); //logging it
+const loggingEvents = require('../util/loggingEvents');
 const {
   HTTP_STATUS_OK,
   HTTP_STATUS_CREATED,
@@ -42,27 +41,20 @@ function toGeoFeatureObj(resultSet) {
 exports.calculateStatistics = async (req, res, next) => {
   try {
     const elevationLevel = parseInt(req.params.elevationLevel, 10);
-
-    // 1. Find the highest mountain
     const highestMountain = await Mountain.findOne({
       order: [['elevation', 'DESC']],
     });
-
-    // 2. Count mountains above the specified elevation level
-    console.log('elevationLevel:', elevationLevel); // Log the elevationLevel
+    console.log('elevationLevel:', elevationLevel);
     const countAboveThreshold = await Mountain.count({
       where: {
         userId: { [Op.is]: null },
         elevation: { [Op.gt]: elevationLevel },
       },
     });
-
-    // 3. Find the mountain closest to the North Pole
     const closestToNorthPole = await Mountain.findOne({
       order: [['latitude', 'DESC']], // Closer to 90
     });
 
-    // Prepare the statistics response
     const statistics = {
       highestMountain: {
         name: highestMountain.name,
@@ -89,16 +81,10 @@ exports.calculateStatistics = async (req, res, next) => {
     );
     const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
     const cert = fs.readFileSync(certPath, 'utf8');
-
-    // Extract public key from certificate
     const publicKey = crypto
       .createPublicKey(cert)
       .export({ type: 'spki', format: 'pem' });
-
-    // Convert statistics to JSON string
     const statisticsString = JSON.stringify(statistics);
-
-    // Sign the statistics string using SHA256 and private key
     const sign = crypto.createSign('SHA256');
     sign.update(statisticsString);
     sign.end();
@@ -107,8 +93,6 @@ exports.calculateStatistics = async (req, res, next) => {
     // Log signature and public key
     console.log('Signature (Base64):', signature);
     console.log('Public Key (PEM):', publicKey);
-
-    // Send statistics, public key, and signature to frontend
     res.status(200).json({ statistics, publicKey, signature });
   } catch (error) {
     console.error('Error calculating statistics:', error);
@@ -192,9 +176,7 @@ exports.getPublicMountain = async (req, res, next) => {
 const { validationResult } = require('express-validator');
 exports.addPublicMountain = async (req, res, next) => {
   try {
-    console.log('addPublicMountain request:', req.body);
-
-    // Check for validation errors
+    //console.log('addPublicMountain request:', req.body);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       console.log('addPublicMountain validation error: ', errors);
@@ -203,10 +185,14 @@ exports.addPublicMountain = async (req, res, next) => {
         .json({ errors: errors.array() });
     }
 
-    const { name, elevation, longitude, latitude, hasmountainrailway, description } =
-      req.body;
-
-    // Check if all required fields are present
+    const {
+      name,
+      elevation,
+      longitude,
+      latitude,
+      hasmountainrailway,
+      description,
+    } = req.body;
     if (!name || !elevation || !longitude || !latitude) {
       return res.status(HTTP_STATUS_BAD_REQUEST).json({
         message: 'Name, elevation, longitude, and latitude are required!',
@@ -222,8 +208,7 @@ exports.addPublicMountain = async (req, res, next) => {
       description,
     });
 
-    console.log('addPublicMountain success, ID:', mountain.id);
-
+    //console.log('addPublicMountain success, ID:', mountain.id);
     loggingEvents.addMountainLog(mountain);
 
     res.status(HTTP_STATUS_CREATED).json(toGeoFeatureObj(mountain));
@@ -235,6 +220,7 @@ exports.addPublicMountain = async (req, res, next) => {
     });
   }
 };
+
 exports.updatePublicMountain = async (req, res, next) => {
   try {
     let httpStatus = HTTP_STATUS_NOT_FOUND;
